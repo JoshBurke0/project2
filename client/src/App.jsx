@@ -1,21 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import './App.css'
 
-function App() {
-  const [greeting, setGreeting] = useState("Loading...")
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/hello')
-      .then(res => res.json())
-      .then(data => setGreeting(data.message))
-      .catch(err => setGreeting("Server is not responding 😢"))
-  }, [])
-
-  return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>MERN Stack Test</h1>
-      <p>Message from Backend: <strong>{greeting}</strong></p>
-    </div>
+export default function App() {
+  const [TaskName, setTaskName] = useState('Testing Task')
+  return(
+    <>
+      <div id="frame">
+        <div id="titleDiv">
+          <h1 id="title">To Do List</h1>
+        </div>
+        <div id="innerFrame">
+          <p>Testing App</p>
+          <Task TaskName = {TaskName}/>
+        </div>
+      </div>
+    </>
   )
 }
-export default App
 
+function Task({TaskName}){
+  return(
+    <h1>{TaskName}</h1>
+  )
+}
