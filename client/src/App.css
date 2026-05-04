@@ -19,7 +19,12 @@
   margin-top: auto;
   border-radius: 16px;    
   background-color: #f9f9f9;
-  box-shadow: 0 4px 12px rgb(182, 182, 182)
+  box-shadow: 0 4px 12px rgb(182, 182, 182);
+  transition: transform 0.3s ease;
+}
+
+#listFrame:hover{
+  transform: scale(1.005)
 }
 
 #listTitleFrame{
@@ -56,11 +61,15 @@
   box-sizing: border-box;
   width: 110vh;
   height: 50vh;
-  /* padding: 20px; */
   margin: 0 auto 0 auto;
   margin-top: auto;
   border-radius: 16px;    
-  box-shadow: 0 4px 12px rgb(182, 182, 182)
+  box-shadow: 0 4px 12px rgb(182, 182, 182);
+  transition: transform 0.3s ease;
+}
+
+#taskFrame:hover{
+  transform: scale(1.005)
 }
 
 #taskTitleFrame{
@@ -92,30 +101,90 @@
 
 #setTitle{
   background-color: aqua;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  gap: 10px;
   padding: 20px;
+  padding-bottom: 30px;
+  padding-top: 0px;
 }
 
 #titleInput{
-  height: 5vh;
+  font-size: 12pt;
+  border-radius: 8px;
+  padding: 10px;
+  border-width: 2px;
+  border-color: black;
+
 }
 
 #setDesc{
   background-color: bisque;
+  display: grid;
+  grid-template-rows: 30% 70%;
+  gap: 10px;
+  padding: 20px;
+  padding-bottom: 30px;
+  padding-top: 0px;
+}
+
+#descInput{
+  font-size: 12pt;
+  width: 10vh;
+  border-radius: 8px;
+  padding: 10px;
+  resize: none;
+  font-family: inherit;
+  width: 95%;
+  border-width: 2px;
+  border-color: black;
+  
 }
 
 #setDropdown{
   background-color: green;
   display: grid;
-  grid-template-rows: 50% 50%;
+  grid-template-rows: 35% 35% 30%;
 }
 
 #setDate{
-  background-color: purple;
+  /* background-color: purple; */
+  display: grid;
+  grid-template-rows: 40% 60%;
+}
+
+#pickDate{
+  background-color: green;
+  display: flex;
+  place-content: center;
+  align-items: center;
+  justify-content: space-evenly;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.dateButton{
+  height: 50%;
+  background-color: lightgray;
+  border-radius: 8px;
+  width: 12%;
+  border-color: black;
+  border-width: 2px;
+  transition: transform 0.3s ease;
+}
+
+.dateButton:hover{
+  transform: scale(1.05)
+}
+
+.dateButton:active{
+  transform: scale(1)
 }
 
 #setPriority{
   background-color: red;
 }
 
+#submitDiv{
+  background-color: yellow;
+}
