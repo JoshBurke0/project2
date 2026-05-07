@@ -1,122 +1,196 @@
-  import { useState } from 'react'
-  import './App.css'
-  // import { set } from 'mongoose'
+import { useState } from 'react'
+import './App.css'
+import axios from 'axios'
 
-  const days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
+const days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
+const priorityMap = {
+  1: "Low",
+  2: "Medium",
+  3: "High"
+}
 
-  export default function App() {
-    
-    const [taskName, setTaskName] = useState('Testing Name')
-    const [taskDesc, setTaskDesc] = useState('Testing Desc')
-    const [taskPriority, setTaskPriority] = useState('')
-    const [taskDate, setTaskDate] = useState('')
+const poop = "poop"
 
+export default function App() {
 
-    // const now = new Date(); 
-    // const weekDay = now.getDay();
+  const [taskName, setTaskName] = useState('')
+  const [taskDesc, setTaskDesc] = useState('')
+  const [taskDate, setTaskDate] = useState('')
+  const [taskPriority, setTaskPriority] = useState('Medium')
+  const [tasks, setTasks] = useState([])
 
-    return(
-      <>
-        <div className="wrapper">
-          <div id="listFrame">
-            <div id="listTitleFrame">
-              <h1 id="listTitle">To Do List</h1>
-            </div>
-            <div id="innerFrame">
+  function handleSubmit() {
+    const newTask = {
+      title: taskName,
+      desc: taskDesc,
+      priority: taskPriority,
+      date: taskDate
+    };
 
-            </div>
+    setTasks([...tasks, newTask]);
+  }
+
+  function deleteTask(titleToDelete) {
+    const updatedTasks = tasks.filter(task => task.title !== titleToDelete)
+    setTasks(updatedTasks);
+  }
+
+  axios.post('http://localhost:5000/api/newUser', {
+    'body': newUser
+  }).then((data) => {
+    console.log("finished axios")
+  });
+
+  return (
+    <>
+      <div className="wrapper">
+        <div id="listFrame">
+          <div id="listTitleFrame">
+            <h1 id="listTitle">To Do List</h1>
           </div>
-          <div id="taskFrame">
-            <div id="taskTitleFrame">
-              <h1 id="taskTitle">Create Task</h1>
+          <div id="innerFrame">
+            <TaskTemplate tasks={tasks} deleteTask={deleteTask} />
+          </div>
+        </div>
+        <div id="taskFrame">
+          <div id="taskTitleFrame">
+            <h1 id="taskTitle">Create Task</h1>
+          </div>
+          <div id="setInfo">
+            <div id="setWriting">
+              <div id="setTitle">
+                <TextBox
+                  inputText={taskName}
+                  setInputText={setTaskName}
+                  textBoxId="titleInput"
+                  textBoxTitle="Title"
+                  inputType="input" />
+              </div>
+              <div id="setDesc">
+                <TextBox
+                  inputText={taskDesc}
+                  setInputText={setTaskDesc}
+                  textBoxId="descInput"
+                  textBoxTitle="Description"
+                  inputType="textarea" />
+              </div>
             </div>
-            <div id="setInfo">
-                <div id="setWriting">
-                  <div id="setTitle">
-                    <TextBox 
-                    inputText={taskName}
-                    setInputText={setTaskName}
-                    textBoxId="titleInput"
-                    textBoxTitle="Title"
-                    inputType="input"/>
-                  </div>
-                  <div id="setDesc">
-                    <TextBox 
-                    inputText={taskDesc}
-                    setInputText={setTaskDesc}
-                    textBoxId="descInput"
-                    textBoxTitle="Description"
-                    inputType="textarea"/>
-                  </div>
+            <div id="setDropdown">
+              <div id="setDate">
+                <div style={{ paddingLeft: "20px" }}>
+                  <h3>Due Date</h3>
                 </div>
-                <div id="setDropdown">
-                  <div id="setDate">
-                    <div style={{ paddingLeft: "20px" }}>
-                      <h3>Due Date</h3>
-                    </div>
-                    <div id="pickDate">
-                      <DatePicker setTaskDate={setTaskDate}/>
-                    </div>
-                  </div>
-                  <div id="setPriority">
-                    <input type="range" min="0" max="2"></input>
-                  </div>
-                  <div id="submitDiv"></div>
+                <div id="pickDate">
+                  <DatePicker taskDate={taskDate} setTaskDate={setTaskDate} />
                 </div>
+              </div>
+              <div id="setPriority">
+                <h3>Priority</h3>
+                {/* <div id="priorityTypes"><h4>Low</h4><h4>Medium</h4><h4>High</h4></div> */}
+                <SetPriority
+                  taskPriority={taskPriority}
+                  setTaskPriority={setTaskPriority} />
+              </div>
+              <div id="submitDiv">
+                <SubmitButton
+                  handleSubmit={handleSubmit}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </>
-    )
-  }
+      </div>
+    </>
+  )
+}
 
-  function TextBox ({ inputText, setInputText, textBoxTitle, textBoxId, inputType }){
+function TextBox({ inputText, setInputText, textBoxTitle, textBoxId, inputType }) {
 
-    const Tag = inputType
-    return(
-      <>
-        <h3>{textBoxTitle}</h3>
-        <Tag 
-          id={textBoxId}
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}/>
-      </>
-    )
-  }
+  const Tag = inputType
+  return (
+    <>
+      <h3>{textBoxTitle}</h3>
+      <Tag
+        id={textBoxId}
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)} />
+    </>
+  )
+}
 
-  function DatePicker({ setTaskDate }){
-
-    function SetDate({ setTaskDate, buttonDay }) {
-      return(
-        <>
-          <button 
-          className="dateButton" 
-          onClick={() => setTaskDate({buttonDay})}
-          >
-            {buttonDay}
-          </button>
-        </>
-      )
-    }
-    return(
-      <>
-        {days.map((day => (
-          <SetDate
+function DatePicker({ taskDate, setTaskDate }) {
+  return (
+    <>
+      {days.map((day => (
+        <SetDate
           key={day}
-          id={`button${day}`}
           buttonDay={day}
+          taskDate={taskDate}
           setTaskDate={setTaskDate}
-          // style={{ backgroundColor: (day=taskDate) ? 'red':'blue'}}
+        />
+      )))}
+    </>
+  )
+}
 
-                />
-        )))}
-      </>
-    )
-  }
+function SetDate({ taskDate, setTaskDate, buttonDay }) {
+  return (
+    <>
+      <button
+        className="dateButton"
+        onClick={() => setTaskDate(buttonDay)}
+        style={{ backgroundColor: buttonDay === taskDate ? 'coral' : 'lightgray' }}>
+        {buttonDay}
+      </button>
+    </>
+  )
+}
 
-  // function buttonClick({ day }){
-  //   {`button${day}`}{
-  //     backgroundColor="red"
-  //   }
-    
-  // }
+function TaskTemplate({ tasks, deleteTask }) {
+
+  return (
+    <>
+      {tasks.map(task => (
+        <div className="listTaskDiv" key={task.title}>
+          <h2>{task.title}</h2>
+          {/* <h3>Desc: {task.desc}</h3> */}
+          <h3>{task.date}</h3>
+          <block className="taskNotch" style={{
+            backgroundColor:
+              task.priority === "Low" ? 'green' :
+                task.priority === "High" ? 'red' : 'yellow',
+          }}>
+            {task.priority}</block>
+          <button onClick={() => deleteTask(task.title)}>Delete</button>
+          <button>More</button>
+        </div>
+      ))}
+    </>
+  );
+}
+
+function SetPriority({ taskPriority, setTaskPriority }) {
+
+  return (
+    <input
+      id="priorityRange"
+      type="range"
+      min="0"
+      max="2"
+      onChange={(e) => {
+        setTaskPriority(priorityMap[Number(e.target.value) + 1])
+      }}
+    ></input>
+  )
+}
+
+function SubmitButton({ handleSubmit }) {
+  return (
+    <button
+      id="submitButton"
+      onClick={handleSubmit}
+    >
+      Submit
+    </button>
+  )
+}
