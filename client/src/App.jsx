@@ -33,8 +33,6 @@ export default function App() {
       date: taskDate
     };
 
-    // setTasks([...tasks, newTask]);
-
     axios.post('http://localhost:5000/api/newTask', {
     'body': newTask
     })
@@ -44,8 +42,6 @@ export default function App() {
   }
 
   function deleteTask(idToDelete) {
-    // const updatedTasks = tasks.filter(task => task.title !== titleToDelete)
-    // setTasks(updatedTasks);
 
     axios.delete(`http://localhost:5000/api/deleteTask/${idToDelete}`)
     .then((response) => {
@@ -53,7 +49,16 @@ export default function App() {
     });
   }
 
-  
+  function toggleDesc(id) {
+    const desc = document.getElementById(id)
+    if (desc.style.display === 'none'){
+      desc.style.display = 'block'
+    }
+    else{
+      desc.style.display = 'none'
+    }
+
+    }
 
   return (
     <>
@@ -63,7 +68,7 @@ export default function App() {
             <h1 id="listTitle">To Do List</h1>
           </div>
           <div id="innerFrame">
-            <TaskTemplate tasks={tasks} deleteTask={deleteTask} />
+            <TaskTemplate tasks={tasks} deleteTask={deleteTask} toggleDesc={toggleDesc} />
           </div>
         </div>
         <div id="taskFrame">
@@ -100,7 +105,6 @@ export default function App() {
               </div>
               <div id="setPriority">
                 <h3>Priority</h3>
-                {/* <div id="priorityTypes"><h4>Low</h4><h4>Medium</h4><h4>High</h4></div> */}
                 <SetPriority
                   taskPriority={taskPriority}
                   setTaskPriority={setTaskPriority} />
@@ -160,21 +164,24 @@ function SetDate({ taskDate, setTaskDate, buttonDay }) {
   )
 }
 
-function TaskTemplate({ tasks, deleteTask }) {
+function TaskTemplate({ tasks, deleteTask, toggleDesc }) {
   return (
     <>
       {tasks.map(task => (
         <div className="listTaskDiv" key={task.title}>
           <h2>{task.title}</h2>
-          <h3>{task.date}</h3>
+          <block className="taskNotch">{task.date}</block>
           <block className="taskNotch" style={{
             backgroundColor:
               task.priority === "Low" ? 'green' :
                 task.priority === "High" ? 'red' : 'yellow',
           }}>
             {task.priority}</block>
-          <button onClick={() => deleteTask(task._id)}>Delete</button>
-          <button>More</button>
+          <button className="taskButton" onClick={() => deleteTask(task._id)}>Delete</button>
+          <button className="taskButton" onClick={() => toggleDesc(`${task.title}Div`)}>More</button>
+          <div className="descDiv" id={`${task.title}Div`}>
+            <p className="descText">{task.desc}</p>
+          </div>
         </div>
       ))}
     </>

@@ -10,11 +10,6 @@ const taskModel = require('./schema/taskSchema')
 app.use(cors());
 app.use(express.json());
 
-// // The "Hello World" Route
-// app.get('/api/hello', (req, res) => {
-//   res.json({ message: "Hello from the MERN Server!" });
-// });
-
 app.get('/api/getTasks', async (req, res) => {
   try{
     const allTasks = await taskModel.find({})
