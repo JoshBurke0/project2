@@ -2,36 +2,60 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-const userModel = require('./models/userModel');
-
 const app = express();
+
+const taskModel = require('./schema/taskSchema')
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// The "Hello World" Route
-app.get('/api/hello', (req, res) => {
-  res.json({ message: "Hello from the MERN Server!" });
-});
+// // The "Hello World" Route
+// app.get('/api/hello', (req, res) => {
+//   res.json({ message: "Hello from the MERN Server!" });
+// });
 
-app.get('/api/getusers', (req, res) => {
+app.get('/api/getTasks', async (req, res) => {
+  try{
+    const allTasks = await taskModel.find({})
+    res.json(allTasks)
+  } catch (err){
+    res.status(500).send(err)
+  }
 
-  userModel.find({}).then((users) => {
-    res.send(users)
-  })
+  
 })
 
+app.post('/api/newTask', async (req, res) => {
+  try{
+    const task = new taskModel({
+      title: req.body.body.title,
+      desc: req.body.body.desc,
+      date: req.body.body.date,
+      priority: req.body.body.priority
+    });
 
+    await task.save()
 
-app.post('/api/newUser', (req, res) => {
-  console.log(req.body.body)
+    const allTasks = await taskModel.find({})
 
-  let user = new userModel({
-    title: req.body.body.title
-  })
+    res.json(allTasks)
 
-  res.send("finished")
+  } catch (err){
+    res.status(500).send(err)
+  }
+});
+
+app.delete('/api/deleteTask/:id', async (req, res) => {
+  try{
+    const id = req.params.id //this grabs the id from the url, as it is '/:id'
+    await taskModel.findByIdAndDelete(id);
+
+    const allTasks = await taskModel.find({})
+    res.json(allTasks)
+  } catch (err){
+    res.status(500).send(err)
+  }
 })
 
 

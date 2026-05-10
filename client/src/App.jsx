@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import axios from 'axios'
 
@@ -9,8 +9,6 @@ const priorityMap = {
   3: "High"
 }
 
-const poop = "poop"
-
 export default function App() {
 
   const [taskName, setTaskName] = useState('')
@@ -18,6 +16,14 @@ export default function App() {
   const [taskDate, setTaskDate] = useState('')
   const [taskPriority, setTaskPriority] = useState('Medium')
   const [tasks, setTasks] = useState([])
+
+  useEffect(() =>{
+    axios.get('http://localhost:5000/api/getTasks')
+    .then((response) =>{
+      setTasks(response.data)
+    })
+    .catch((err) => console.log(err))
+  }, []);
 
   function handleSubmit() {
     const newTask = {
@@ -27,19 +33,27 @@ export default function App() {
       date: taskDate
     };
 
-    setTasks([...tasks, newTask]);
+    // setTasks([...tasks, newTask]);
+
+    axios.post('http://localhost:5000/api/newTask', {
+    'body': newTask
+    })
+    .then((response) => {
+    setTasks(response.data)
+    });
   }
 
-  function deleteTask(titleToDelete) {
-    const updatedTasks = tasks.filter(task => task.title !== titleToDelete)
-    setTasks(updatedTasks);
+  function deleteTask(idToDelete) {
+    // const updatedTasks = tasks.filter(task => task.title !== titleToDelete)
+    // setTasks(updatedTasks);
+
+    axios.delete(`http://localhost:5000/api/deleteTask/${idToDelete}`)
+    .then((response) => {
+      setTasks(response.data)
+    });
   }
 
-  axios.post('http://localhost:5000/api/newUser', {
-    'body': newUser
-  }).then((data) => {
-    console.log("finished axios")
-  });
+  
 
   return (
     <>
@@ -147,13 +161,11 @@ function SetDate({ taskDate, setTaskDate, buttonDay }) {
 }
 
 function TaskTemplate({ tasks, deleteTask }) {
-
   return (
     <>
       {tasks.map(task => (
         <div className="listTaskDiv" key={task.title}>
           <h2>{task.title}</h2>
-          {/* <h3>Desc: {task.desc}</h3> */}
           <h3>{task.date}</h3>
           <block className="taskNotch" style={{
             backgroundColor:
@@ -161,7 +173,7 @@ function TaskTemplate({ tasks, deleteTask }) {
                 task.priority === "High" ? 'red' : 'yellow',
           }}>
             {task.priority}</block>
-          <button onClick={() => deleteTask(task.title)}>Delete</button>
+          <button onClick={() => deleteTask(task._id)}>Delete</button>
           <button>More</button>
         </div>
       ))}
@@ -170,7 +182,6 @@ function TaskTemplate({ tasks, deleteTask }) {
 }
 
 function SetPriority({ taskPriority, setTaskPriority }) {
-
   return (
     <input
       id="priorityRange"
