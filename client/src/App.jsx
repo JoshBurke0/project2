@@ -26,6 +26,12 @@ export default function App() {
   }, []);
 
   function handleSubmit() {
+
+    setTaskName("")
+    setTaskDesc("")
+    setTaskDate("")
+    setTaskPriority("Medium")
+
     const newTask = {
       title: taskName,
       desc: taskDesc,
